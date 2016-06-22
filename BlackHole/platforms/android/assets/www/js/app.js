@@ -26,17 +26,9 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 .controller('BlackCtrl', ['$scope', '$cordovaDeviceMotion', 'constellationConsumer',
     function ($scope, $cordovaDeviceMotion, constellation) {
 
-        $scope.connect = false;
         $scope.state = false;
         constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
         constellation.connect();
-
-        constellation.onConnectionStateChanged(function (change) {
-            $scope.$apply(function () {
-                $scope.connect = change.newState === $.signalR.connectionState.connected;
-            });
-        });
-
 
         $scope.runAcc = function () {
             $scope.state = true;
