@@ -27,7 +27,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
+        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
         constellation.connect();
 
         $scope.runAcc = function () {
@@ -46,7 +46,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     $scope.Z = result.z;
                     $scope.timeStamp = result.timestamp;
 
-                    constellation.sendMessage({ Scope: 'Package', Args: ['ROMAIN-MSI/BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
                 });
         };
 
@@ -56,6 +56,6 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.X = 0;
             $scope.Y = 0;
             $scope.Z = 0;
-            constellation.sendMessage({ Scope: 'Package', Args: ['ROMAIN-MSI/BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
     }])
