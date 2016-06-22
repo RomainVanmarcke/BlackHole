@@ -19,7 +19,6 @@ namespace BlackMenu
         public override void OnStart()
         {
             PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = false, Plat = false });
-
             this.Acc.ValueChanged += (s, e) =>
             {
                 if (Acc.DynamicValue.State == true)
