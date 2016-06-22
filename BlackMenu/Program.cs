@@ -14,10 +14,14 @@ namespace BlackMenu
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
+            
         }
+
 
         public override void OnStart()
         {
+            
+
             PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = false, Plat = false });
             this.Acc.ValueChanged += (s, e) =>
             {
@@ -60,7 +64,7 @@ namespace BlackMenu
 
         }
 
-        [StateObjectLink("ROMAIN-MSI", "BlackConnector", "accelerometer")]
+        [StateObjectLink("BlackConnector", "accelerometer")]
         private StateObjectNotifier Acc { get; set; }
     }
 }
