@@ -35,7 +35,6 @@
             <h1 class="title">Black App</h1>
         </ion-header-bar>
         <ion-content>
-            <p class="etat">Etat : {{connect ? "Connected" : "Deconnected"}}</p>
             <div class="button button-balanced" style="width: 100%; height:100%" ng-if="!state" ng-click=runAcc()>On</div>
             <div class="button button-assertive" style="width: 100%; height:100%" ng-if="state" ng-click=stopAcc()>Off</div>
         </ion-content>

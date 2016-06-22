@@ -26,17 +26,9 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 .controller('BlackCtrl', ['$scope', '$cordovaDeviceMotion', 'constellationConsumer',
     function ($scope, $cordovaDeviceMotion, constellation) {
 
-        $scope.connect = false;
         $scope.state = false;
-        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
+        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
         constellation.connect();
-
-        constellation.onConnectionStateChanged(function (change) {
-            $scope.$apply(function () {
-                $scope.connect = change.newState === $.signalR.connectionState.connected;
-            });
-        });
-
 
         $scope.runAcc = function () {
             $scope.state = true;
@@ -54,7 +46,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     $scope.Z = result.z;
                     $scope.timeStamp = result.timestamp;
 
-                    constellation.sendMessage({ Scope: 'Package', Args: ['ROMAIN-MSI/BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
                 });
         };
 
@@ -64,6 +56,6 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.X = 0;
             $scope.Y = 0;
             $scope.Z = 0;
-            constellation.sendMessage({ Scope: 'Package', Args: ['ROMAIN-MSI/BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
     }])
