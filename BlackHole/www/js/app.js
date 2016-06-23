@@ -27,8 +27,12 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient"); // essayer + à la place de romain-msi
+        constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient"); // essayer + à la place de romain-msi
         constellation.connect();
+
+        textInput = function (bullet) {
+            constellation.sendMessage({ Scope: 'Package', Args: ['PushBullet'] }, 'SendPush', { Title: 'BlackBullet', Message: bullet });
+        }
 
         $scope.runAcc = function () {
             $scope.state = true;
@@ -66,79 +70,110 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 $scope.state = change.newState === $.signalR.connectionState.connected;
             });
             if (change.newState === $.signalR.connectionState.connected) {
-                constellation.requestSubscribeStateObjects("*", "Black$scope.Menu", "Movements", "*");
+                constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
             }
             
 
 
         });
 
-        $scope.Menu = Home;
+        $scope.Menu = 'Home';
         constellation.onUpdateStateObject(function (stateobject) {
 
             $scope.$apply(function () {
-                if ($scope[stateobject.PackageName] == undefined) {
+                if ($scope[stateobject.PackageName] === undefined) {
                     $scope[stateobject.PackageName] = {};
                 }
                 $scope[stateobject.PackageName][stateobject.Name] = stateobject;
 
-                // $scope.Menu HOME
-                if ($scope.Menu == Home) {
-                    if (stateobject.Value.Left) {
-                        // REQUEST (GT or RATP)
-                        $scope.Menu = Request;
+                // CAS SO MOVEMENTS
+                if (stateobject.Name === 'Movements') {
+                    // Menu HOME
+                    if ($scope.Menu === 'Home') {
+                        if (stateobject.Value.Left) {
+                            // 'Request' (GT or 'RATP')
+                            $scope.Menu = 'Request';
+
+                        }
+                        else if (stateobject.Value.Right) {
+                            // 'PushBullet'
+                            $scope.stopAcc();
+                            recognition.start();
+
+                        }
+                        else if (stateobject.Value.Flat) {
+                            // INFO
+                            constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
+                            constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
+
+                        }
+                        else if (stateobject.Value.Down) {
+                            // SETTINGS
+
+                        }
 
                     }
-                    else if (stateobject.Value.Right) {
-                        // PUSHBULLET
-                        $scope.Menu = PushBullet;
+                        // Menu 'Request'
+                    else if ($scope.Menu === 'Request') {
+                        if (stateobject.Value.Left) {
+                            // 'RATP'
+                            $scope.Menu = 'RATP';
+                        }
+                        else if (stateobject.Value.Right) {
+                            // GOOGLE TRAFFIC
+                        }
 
                     }
-                    else if (stateobject.Value.Flat) {
-                        // INFO
 
-                    }
-                    else if (stateobject.Value.Down) {
-                        // SETTINGS
-
+                        // Menu 'RATP'
+                    else if ($scope.Menu === 'RATP') {
+                        if (stateobject.Value.Left) {
+                            // Get Schedule
+                        }
+                        else if (stateobject.Value.Right) {
+                            // Get Traffic
+                        }
                     }
 
                 }
-                // $scope.$scope.Menu REQUEST
-                else if ($scope.Menu == Request) {
-                    if (stateobject.Value.Left) {
-                        // RATP
-                        $scope.Menu = RATP;
-                    }
-                    else if (stateobject.Value.Right) {
-                        // GOOGLE TRAFFIC
-                    }
 
-                }
-
-                // $scope.Menu RATP
-                else if ($scope.Menu == RATP) {
-                    if (stateobject.Value.Left) {
-                        // Get Schedule
+                // CAS SO MORNING
+                if (stateobject.Name === 'Morning') {
+                    if (stateobject.Value.source === 1) {
+                        constellation.sendMessage({ Scope: 'Package', Args: ['MessageCallback'] }, 'MyMessage', [stateobject.Value.message, 100, 0]);
+                        constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 2);
+                        $scope.stopAcc();
                     }
-                    else if (stateobject.Value.Right) {
-                        // Get Traffic
+                    if (stateobject.Value.source === 0) {
+                        TTS.speak({
+                            text: stateobject.Value.message,
+                            locale: 'fr-FR',
+                            rate: 0.8
+                        });
+                        constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 2);
+                        $scope.stopAcc();
                     }
                 }
 
-                // $scope.Menu PUSHBULLET
-                else if ($scope.Menu == PushBullet) {
-                    if (stateobject.Value.Left) {
-                        // Start RECORDING
-                    }
-                    else if (stateobject.Value.Right) {
-                        // Envoyer message
-                    }
-                }
-            })
+                })
+                
         })
 
 
 
     }])
+// Parametrage de la Voice Recognition
+var recognition;
+document.addEventListener('deviceready', onDeviceReady, false);
+
+function onDeviceReady() {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-Fr';
+    recognition.onresult = function (event) {
+        if (event.results.length > 0) {
+            var text = event.results[0][0].transcript;
+            textInput(text);
+        }
+    }
+}
 

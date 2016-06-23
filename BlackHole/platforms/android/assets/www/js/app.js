@@ -27,17 +27,15 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
+        constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient"); // essayer + à la place de romain-msi
         constellation.connect();
+
+        textInput = function (bullet) {
+            constellation.sendMessage({ Scope: 'Package', Args: ['PushBullet'] }, 'SendPush', { Title: 'BlackBullet', Message: bullet });
+        }
 
         $scope.runAcc = function () {
             $scope.state = true;
-            TTS.speak(
-            {
-                text: "Vivien paye son chinois" ,
-                locale: 'fr-FR',
-                rate: 0.85
-            }, function () { alert('Meteo'); }, function (reason) { alert(reason) });
 
             var options = {
                 frequency: 500
@@ -65,4 +63,117 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.Z = 0;
             constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
+
+        constellation.onConnectionStateChanged(function (change) {
+           
+            $scope.$apply(function () {
+                $scope.state = change.newState === $.signalR.connectionState.connected;
+            });
+            if (change.newState === $.signalR.connectionState.connected) {
+                constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
+            }
+            
+
+
+        });
+
+        $scope.Menu = 'Home';
+        constellation.onUpdateStateObject(function (stateobject) {
+
+            $scope.$apply(function () {
+                if ($scope[stateobject.PackageName] === undefined) {
+                    $scope[stateobject.PackageName] = {};
+                }
+                $scope[stateobject.PackageName][stateobject.Name] = stateobject;
+
+                // CAS SO MOVEMENTS
+                if (stateobject.Name === 'Movements') {
+                    // Menu HOME
+                    if ($scope.Menu === 'Home') {
+                        if (stateobject.Value.Left) {
+                            // 'Request' (GT or 'RATP')
+                            $scope.Menu = 'Request';
+
+                        }
+                        else if (stateobject.Value.Right) {
+                            // 'PushBullet'
+                            $scope.stopAcc();
+                            recognition.start();
+
+                        }
+                        else if (stateobject.Value.Flat) {
+                            // INFO
+                            constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
+                            constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
+
+                        }
+                        else if (stateobject.Value.Down) {
+                            // SETTINGS
+
+                        }
+
+                    }
+                        // Menu 'Request'
+                    else if ($scope.Menu === 'Request') {
+                        if (stateobject.Value.Left) {
+                            // 'RATP'
+                            $scope.Menu = 'RATP';
+                        }
+                        else if (stateobject.Value.Right) {
+                            // GOOGLE TRAFFIC
+                        }
+
+                    }
+
+                        // Menu 'RATP'
+                    else if ($scope.Menu === 'RATP') {
+                        if (stateobject.Value.Left) {
+                            // Get Schedule
+                        }
+                        else if (stateobject.Value.Right) {
+                            // Get Traffic
+                        }
+                    }
+
+                }
+
+                // CAS SO MORNING
+                if (stateobject.Name === 'Morning') {
+                    if (stateobject.Value.source === 1) {
+                        constellation.sendMessage({ Scope: 'Package', Args: ['MessageCallback'] }, 'MyMessage', [stateobject.Value.message, 100, 0]);
+                        constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 2);
+                        $scope.stopAcc();
+                    }
+                    if (stateobject.Value.source === 0) {
+                        TTS.speak({
+                            text: stateobject.Value.message,
+                            locale: 'fr-FR',
+                            rate: 0.8
+                        });
+                        constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 2);
+                        $scope.stopAcc();
+                    }
+                }
+
+                })
+                
+        })
+
+
+
     }])
+// Parametrage de la Voice Recognition
+var recognition;
+document.addEventListener('deviceready', onDeviceReady, false);
+
+function onDeviceReady() {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-Fr';
+    recognition.onresult = function (event) {
+        if (event.results.length > 0) {
+            var text = event.results[0][0].transcript;
+            textInput(text);
+        }
+    }
+}
+
