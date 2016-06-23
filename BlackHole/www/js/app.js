@@ -27,7 +27,10 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
+        $scope.X = 0;
+        $scope.Y = 0;
+        $scope.Z = 0;
+        constellation.intializeClient("http://192.168.137.235:8088", "53d869509578d1cf7d4e2f37ea287687c54fc431", "BlackClient");
         constellation.connect();
 
         $scope.runAcc = function () {
@@ -46,7 +49,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     $scope.Z = result.z;
                     $scope.timeStamp = result.timestamp;
 
-                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
                 });
         };
 
