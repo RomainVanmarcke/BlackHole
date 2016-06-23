@@ -129,9 +129,21 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     else if ($scope.Menu === 'RATP') {
                         if (stateobject.Value.Left) {
                             // Get Schedule
+                            TTS.speak({
+                                text: "Vous avez sélectionné R A T P Schedule",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
+                            RatpSchedule();
                         }
                         else if (stateobject.Value.Right) {
                             // Get Traffic
+                            TTS.speak({
+                                text: "Vous avez sélectionné R A T P Traffic",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
+                            RatpTraffic();
                         }
                     }
 
@@ -157,7 +169,48 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 
                 })
                 
-        })
+        }) // Fin du OnUpdateStateObject
+
+
+        // FONCTION RATP SCHEDULE
+        RatpSchedule = function () {
+            type = "metro";
+            line = "1";
+            station = "Bastille";
+            direction = "La Defense";
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['Ratp'] }, 'GetSchedule', [type, line, station, direction], function (result) {
+                annonce = "les prochaines arrivées,"
+                angular.forEach(result.Data, function (id, destination, message) {
+                    s = message;
+                    if ((s.EndsWith("mn")))
+                        annonce = annonce + s.Remove(s.Length - 2, 2) + "minutes";
+                    else
+                        annonce = annonce + s;
+                });
+                TTS.speak({
+                    text: annonce,
+                    locale: 'fr-FR',
+                    rate: 0.75
+                });
+            })
+            $scope.Menu = 'Home';
+        };
+
+        // FONCTION RATP TRAFFIC
+        RatpTraffic = function () {
+            type = "metro";
+            line = "1";
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['Ratp'] }, 'GetTraffic', [type, line], function (result) {
+                message = result.Data.message;
+                TTS.speak({
+                    text: message,
+                    locale: 'fr-FR',
+                    rate: 0.75
+                });
+            })
+            $scope.Menu = 'Home';
+
+        };
 
 
 
