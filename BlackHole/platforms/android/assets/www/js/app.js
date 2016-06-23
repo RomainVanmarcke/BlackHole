@@ -27,11 +27,18 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
+        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
         constellation.connect();
 
         $scope.runAcc = function () {
             $scope.state = true;
+            TTS.speak(
+            {
+                text: "Vivien paye son chinois" ,
+                locale: 'fr-FR',
+                rate: 0.85
+            }, function () { alert('Meteo'); }, function (reason) { alert(reason) });
+
             var options = {
                 frequency: 500
             };

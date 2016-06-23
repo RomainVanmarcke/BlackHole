@@ -27,11 +27,12 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
+        constellation.intializeClient("http://romain-msi:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient"); // essayer + à la place de romain-msi
         constellation.connect();
 
         $scope.runAcc = function () {
             $scope.state = true;
+
             var options = {
                 frequency: 500
             };
@@ -58,4 +59,46 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.Z = 0;
             constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
+
+        constellation.onConnectionStateChanged(function (change) {
+           
+            $scope.$apply(function () {
+                $scope.state = change.newState === $.signalR.connectionState.connected;
+            });
+            if (change.newState === $.signalR.connectionState.connected) {
+                constellation.requestSubscribeStateObjects("*", "*", "*", "*");
+            }
+            
+
+        });
+
+
+        constellation.onUpdateStateObject(function (stateobject) {
+
+            $scope.$apply(function () {
+                if ($scope[stateobject.PackageName] == undefined) {
+                    $scope[stateobject.PackageName] = {};
+                }
+                $scope[stateobject.PackageName][stateobject.Name] = stateobject;
+
+                BlackHome(stateobject);
+
+            })
+        })
+
+        BlackHome = function (stateobject) {
+            if (stateobject.Name === 'Movements') {
+                if (stateobject.Value.Left) {
+                    BlackRequest();
+                }
+                else if (stateobject.Value.Right) {
+                    BlackPushBullet();
+                }
+                else if (stateobject.Value.Flat) {
+                    BlackInfo();
+                }
+            }
+        };
+
     }])
+
