@@ -66,13 +66,14 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 $scope.state = change.newState === $.signalR.connectionState.connected;
             });
             if (change.newState === $.signalR.connectionState.connected) {
-                constellation.requestSubscribeStateObjects("*", "*", "*", "*");
+                constellation.requestSubscribeStateObjects("*", "Black$scope.Menu", "Movements", "*");
             }
             
 
+
         });
 
-
+        $scope.Menu = Home;
         constellation.onUpdateStateObject(function (stateobject) {
 
             $scope.$apply(function () {
@@ -81,24 +82,63 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 }
                 $scope[stateobject.PackageName][stateobject.Name] = stateobject;
 
-                BlackHome(stateobject);
+                // $scope.Menu HOME
+                if ($scope.Menu == Home) {
+                    if (stateobject.Value.Left) {
+                        // REQUEST (GT or RATP)
+                        $scope.Menu = Request;
 
+                    }
+                    else if (stateobject.Value.Right) {
+                        // PUSHBULLET
+                        $scope.Menu = PushBullet;
+
+                    }
+                    else if (stateobject.Value.Flat) {
+                        // INFO
+
+                    }
+                    else if (stateobject.Value.Down) {
+                        // SETTINGS
+
+                    }
+
+                }
+                // $scope.$scope.Menu REQUEST
+                else if ($scope.Menu == Request) {
+                    if (stateobject.Value.Left) {
+                        // RATP
+                        $scope.Menu = RATP;
+                    }
+                    else if (stateobject.Value.Right) {
+                        // GOOGLE TRAFFIC
+                    }
+
+                }
+
+                // $scope.Menu RATP
+                else if ($scope.Menu == RATP) {
+                    if (stateobject.Value.Left) {
+                        // Get Schedule
+                    }
+                    else if (stateobject.Value.Right) {
+                        // Get Traffic
+                    }
+                }
+
+                // $scope.Menu PUSHBULLET
+                else if ($scope.Menu == PushBullet) {
+                    if (stateobject.Value.Left) {
+                        // Start RECORDING
+                    }
+                    else if (stateobject.Value.Right) {
+                        // Envoyer message
+                    }
+                }
             })
         })
 
-        BlackHome = function (stateobject) {
-            if (stateobject.Name === 'Movements') {
-                if (stateobject.Value.Left) {
-                    BlackRequest();
-                }
-                else if (stateobject.Value.Right) {
-                    BlackPushBullet();
-                }
-                else if (stateobject.Value.Flat) {
-                    BlackInfo();
-                }
-            }
-        };
+
 
     }])
 
