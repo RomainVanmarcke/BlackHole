@@ -27,11 +27,17 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://nomPC:8088", "cleStandard", "BlackClient");
+        constellation.intializeClient("http://AdPC:8088", "53d869509578d1cf7d4e2f37ea287687c54fc431", "BlackClient");
         constellation.connect();
 
         $scope.runAcc = function () {
             $scope.state = true;
+            TTS.speak({
+                text: "Vivien et Romain sont généreux",
+                locale: 'fr-FR',
+                rate: 1
+            });
+
             var options = {
                 frequency: 500
             };

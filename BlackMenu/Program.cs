@@ -22,7 +22,7 @@ namespace BlackMenu
         {
             
 
-            PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = false, Plat = false });
+            PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = false, Down = false });
             this.Acc.ValueChanged += (s, e) =>
             {
                 if (Acc.DynamicValue.State == true)
@@ -34,29 +34,29 @@ namespace BlackMenu
                     double yabs = Math.Abs(y);
                     double zabs = Math.Abs(z);
 
-
-                    if ((xabs + yabs < 1) && zabs >= 9 && zabs <= 11)
+                    // Movements vers le bas
+                    if ((xabs + zabs < 5) && yabs <= 5)
                     {
-                        PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = false, Plat = true });
+                        PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = false, Down = true });
                     }
-                    // Mouvement mise a plat : DayInfo
+                    // Movements mise a plat
                     else if (xabs < 5 && yabs < 2 && zabs > 8)
                     {
-                        PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = true, ForecastIO = false, BatteryChecker = false, Plat = false });
+                        PackageHost.PushStateObject("Movements", new { Flat = true, Left = false, Right = false, Down = false });
                     }
-                    // Mouvement quart gauche : ForecastIO
+                    // Movements quart gauche
                     else if (x > 5 && y < 6 && zabs < 4)
                     {
-                        PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = true, BatteryChecker = false, Plat = false });
+                        PackageHost.PushStateObject("Movements", new { Flat = false, Left = true, Right = false, Down = false });
                     }
-                    // Mouvement quart droit : BatteryChecker
+                    // Movements quart droit
                     else if (x < (-5) && y < 6 && zabs < 4)
                     {
-                        PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = true, Plat = false });
+                        PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = true, Down = false });
                     }
                     else
                     {
-                        PackageHost.PushStateObject("PackagesToTalk", new { DayInfo = false, ForecastIO = false, BatteryChecker = false, Plat = false });
+                        PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = false, Down = false });
                     }
                 }
             };
