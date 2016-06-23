@@ -35,12 +35,12 @@ namespace BlackMenu
                     double zabs = Math.Abs(z);
 
                     // Movements vers le bas
-                    if ((xabs + zabs < 5) && yabs <= 5)
+                    if (xabs < 5 && yabs < 2 && z < -8)
                     {
                         PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = false, Down = true });
                     }
                     // Movements mise a plat
-                    else if (xabs < 5 && yabs < 2 && zabs > 8)
+                    else if (xabs < 5 && yabs < 2 && z > 8)
                     {
                         PackageHost.PushStateObject("Movements", new { Flat = true, Left = false, Right = false, Down = false });
                     }
