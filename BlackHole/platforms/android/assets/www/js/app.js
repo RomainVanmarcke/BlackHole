@@ -27,7 +27,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation) {
 
         $scope.state = false;
-        constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient"); // essayer + à la place de romain-msi
+        constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
         constellation.connect();
 
         textInput = function (bullet) {
@@ -64,17 +64,10 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
 
-        constellation.onConnectionStateChanged(function (change) {
-           
-            $scope.$apply(function () {
-                $scope.state = change.newState === $.signalR.connectionState.connected;
-            });
+        constellation.onConnectionStateChanged(function (change) {  
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
             }
-            
-
-
         });
 
         $scope.Menu = 'Home';
@@ -90,22 +83,35 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 if (stateobject.Name === 'Movements') {
                     // Menu HOME
                     if ($scope.Menu === 'Home') {
+                        TTS.Speak({
+                            text: "Menu Home",
+                            locale: 'fr-FR',
+                            rate: 0.8
+                        });
                         if (stateobject.Value.Left) {
                             // 'Request' (GT or 'RATP')
                             $scope.Menu = 'Request';
-
                         }
                         else if (stateobject.Value.Right) {
                             // 'PushBullet'
+                            TTS.Speak({
+                                text: "PushBullet",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
+                            $timeout(1000);
                             $scope.stopAcc();
                             recognition.start();
-
                         }
                         else if (stateobject.Value.Flat) {
                             // INFO
+                            TTS.Speak({
+                                text: "Voici les infos du jour : ",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
                             constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
                             constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
-
                         }
                         else if (stateobject.Value.Down) {
                             // SETTINGS
@@ -118,35 +124,39 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // 'RATP'
                             $scope.Menu = 'RATP';
+                            TTS.Speak({
+                                text: "Menu R A T P.",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
                         }
                         else if (stateobject.Value.Right) {
                             // GOOGLE TRAFFIC
                         }
-
                     }
-
                         // Menu 'RATP'
                     else if ($scope.Menu === 'RATP') {
                         if (stateobject.Value.Left) {
                             // Get Schedule
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Schedule",
+                                text: "R A T P Schedule",
                                 locale: 'fr-FR',
                                 rate: 0.8
                             });
                             RatpSchedule();
+                            $scope.Menu = 'Home';
                         }
                         else if (stateobject.Value.Right) {
                             // Get Traffic
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Traffic",
+                                text: "R A T P Traffic",
                                 locale: 'fr-FR',
                                 rate: 0.8
                             });
                             RatpTraffic();
+                            $scope.Menu = 'Home';
                         }
                     }
-
                 }
 
                 // CAS SO MORNING
@@ -166,11 +176,8 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         $scope.stopAcc();
                     }
                 }
-
-                })
-                
+                })              
         }) // Fin du OnUpdateStateObject
-
 
         // FONCTION RATP SCHEDULE
         RatpSchedule = function () {
@@ -209,12 +216,10 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 });
             })
             $scope.Menu = 'Home';
-
         };
-
-
-
     }])
+
+
 // Parametrage de la Voice Recognition
 var recognition;
 document.addEventListener('deviceready', onDeviceReady, false);
