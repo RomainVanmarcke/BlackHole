@@ -257,6 +257,8 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             HWM = false;
             DI = true;
             FIO = true;
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI }]);
+
         }
 
         // FONCTION RATP TRAFFIC

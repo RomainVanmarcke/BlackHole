@@ -71,6 +71,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": 0, "Y": 0, "Z": 0 }]);
+                constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['Movements', { "Flat": "false", "Left": "false", "Right": "false", "Down": "false" }]);
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI}]);
 
             }
@@ -256,6 +257,8 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             HWM = false;
             DI = true;
             FIO = true;
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI }]);
+
         }
 
         // FONCTION RATP TRAFFIC
