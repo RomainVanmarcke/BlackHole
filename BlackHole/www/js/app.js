@@ -51,7 +51,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     $scope.Z = result.z;
                     $scope.timeStamp = result.timestamp;
 
-                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
                 });
         };
 
@@ -61,10 +61,10 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.X = 0;
             $scope.Y = 0;
             $scope.Z = 0;
-            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
 
-        constellation.onConnectionStateChanged(function (change) {  
+        constellation.onConnectionStateChanged(function (change) {
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": 0, "Y": 0, "Z": 0 }]);
@@ -196,7 +196,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         $scope.stopAcc();
                     }
                 }
-                })              
+            })
         }) // Fin du OnUpdateStateObject
 
         // FONCTION RATP SCHEDULE
@@ -212,7 +212,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     if (s.indexOf("mn") >= 0) {
                         s = s[0] + s[1] + " minutes";
                     };
-                   annonce = annonce + ", " + s;
+                    annonce = annonce + ", " + s;
                 };
                 TTS.speak({
                     text: annonce,
