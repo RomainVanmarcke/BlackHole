@@ -61,23 +61,27 @@ namespace BlackInfo
         [MessageCallback]
         private void Morning(quiparle qui)
         {
+            PackageHost.WriteInfo("X:", settingsInfo.Value.DynamicValue);
+            PackageHost.WriteInfo("Y:", settingsInfo.DynamicValue.HWM);
+
             string annonce = "";
-            if (settingsInfo.DynamicValue.HWM)
-            {
-                annonce += Requete("HWMonitor");
-            }
-            if (settingsInfo.DynamicValue.FIO)
-            {
-                annonce += Requete("ForecastIO");
-            }
-            if (settingsInfo.DynamicValue.DI)
-            {
-                annonce += Requete("DayInfo");
-            }
+            //if (settingsInfo.DynamicValue.HWM)
+            //{
+            //    annonce += Requete("HWMonitor");
+            //}
+            //if (settingsInfo.DynamicValue.FIO)
+            //{
+            //    annonce += Requete("ForecastIO");
+            //}
+            //if (settingsInfo.DynamicValue.DI)
+            //{
+            //    annonce += Requete("DayInfo");
+            //}
+            annonce += Requete("DayInfo");
+            annonce += Requete("ForecastIO");
             if(annonce == "")
             {
                 annonce = "aucun package choisit";
-                PackageHost.SendMessage(MessageScope.Create("ROMAIN-MSI/MessageCallback"), "MyMessage", new object[] { annonce, PackageHost.GetSettingValue<int>("volume"), PackageHost.GetSettingValue<int>("vitesse") });
             }
             PackageHost.PushStateObject("Morning", new { message = annonce, source = qui });
         }
