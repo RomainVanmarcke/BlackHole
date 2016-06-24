@@ -291,9 +291,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.Menu = 'Home';
         };
         GoogleTraffic = function (depart, destination, nb) {
-            //depart = "Lille";
-            //destination = "Avelin";
-            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['MSI-VIVIEN/GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
                 saga(result, destination, depart);
             })
         };
