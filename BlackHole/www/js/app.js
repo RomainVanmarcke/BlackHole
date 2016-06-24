@@ -27,6 +27,9 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
     function ($scope, $cordovaDeviceMotion, constellation, $timeout) {
 
         $scope.state = false;
+        HWM = true;
+        FIO = true;
+        DI = true;
         constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
         constellation.connect();
 
@@ -68,6 +71,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": 0, "Y": 0, "Z": 0 }]);
+                constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI}]);
 
             }
         });
@@ -128,6 +132,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Down) {
                             // SETTINGS
+                            BlackSettings();
                             $scope.Menu = 'Home';
                         }
 
@@ -246,6 +251,12 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 
             })
         };
+
+        BlackSettings = function () {
+            HWM = false;
+            DI = true;
+            FIO = true;
+        }
 
         // FONCTION RATP TRAFFIC
         RatpTraffic = function () {

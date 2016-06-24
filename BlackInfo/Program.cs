@@ -31,6 +31,8 @@ namespace BlackInfo
         private StateObjectNotifier nameday { get; set; }
         [StateObjectLink("ROMAIN-MSI", "DayInfo", "SunInfo")]
         private StateObjectNotifier suninfo { get; set; }
+        [StateObjectLink("ROMAIN-MSI", "BlackConnector", "SettingsInfo")]
+        private StateObjectNotifier settingsInfo { get; set; }
 
         //[MessageCallback(IsHidden = true)]
         private string Requete(string pack)
@@ -59,20 +61,16 @@ namespace BlackInfo
         [MessageCallback]
         private void Morning(quiparle qui)
         {
-            bool HWM = false;
-            bool FIO = false;
-            bool DI = false;
             string annonce = "";
-            PackageHost.RequestStateObjects("*", "BlackConnector", "InfoSettings", "*");
-            if (HWM)
+            if (settingsInfo.DynamicValue.HWM)
             {
                 annonce += Requete("HWMonitor");
             }
-            if (FIO)
+            if (settingsInfo.DynamicValue.FIO)
             {
                 annonce += Requete("ForecastIO");
             }
-            if (DI)
+            if (settingsInfo.DynamicValue.DI)
             {
                 annonce += Requete("DayInfo");
             }
