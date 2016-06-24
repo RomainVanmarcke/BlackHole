@@ -189,7 +189,6 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             });
                             setTimeout(function () { reconDepart.start();}, 1000);
                         }
-                        }
                         else if (stateobject.Value.Right) {
 
                         }
