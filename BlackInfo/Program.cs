@@ -61,8 +61,8 @@ namespace BlackInfo
         [MessageCallback]
         private void Morning(quiparle qui)
         {
-            PackageHost.WriteInfo("X:", settingsInfo.Value.DynamicValue);
-            PackageHost.WriteInfo("Y:", settingsInfo.DynamicValue.HWM);
+            //PackageHost.WriteInfo("X:", settingsInfo.Value.DynamicValue);
+            //PackageHost.WriteInfo("Y:", settingsInfo.DynamicValue.HWM);
 
             string annonce = "";
             //if (settingsInfo.DynamicValue.HWM)
