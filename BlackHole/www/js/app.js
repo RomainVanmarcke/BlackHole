@@ -189,14 +189,20 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             $scope.stopAcc();
                             TTS.speak({
-                                text: "Daipart",
+                                text: "Départ",
                                 locale: 'fr-FR',
-                                rate: myrate
+                                rate: 0.9
                             });
-                            setTimeout(function () { reconDepart.start();}, 1000);
+                            qSaga(1);
                         }
                         else if (stateobject.Value.Right) {
-
+                            $scope.stopAcc();
+                            TTS.speak({
+                                text: "Départ",
+                                locale: 'fr-FR',
+                                rate: 0.9
+                            });
+                            qSaga(2);
                         }
                         else if (stateobject.Value.Down) {
                             // RETOUR HOME
@@ -284,10 +290,10 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             })
             $scope.Menu = 'Home';
         };
-        GoogleTraffic = function (depart, destination) {
+        GoogleTraffic = function (depart, destination, nb) {
             //depart = "Lille";
             //destination = "Avelin";
-            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['MSI-VIVIEN/GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
                 saga(result, destination, depart);
             })
         };
@@ -325,17 +331,22 @@ function onDeviceReady() {
 
 function saga(result, dest, depart) {
     var message = "";
-    //for (var i = 0; i < result.Data.length; i++) {
-    message = message + "Pour aller de " + depart + " a " + dest + ", il faut voyager " + result.Data[0].Name + ", le temps de trajet avec traffic sera de " + result.Data[0].InfoTraffic + "utes, la distance est de : " + result.Data[0].DistanceString;
-    //}
-    //alert(message);
+    if (nbsaga === 1) {
+        message = message + "Pour aller de " + depart + " a " + dest + ", il faut voyager " + result.Data[0].Name + ", le temps de trajet avec traffic sera de " + result.Data[0].InfoTraffic + "utes, la distance est de : " + result.Data[0].DistanceString;
+    }
+    else if (nbsaga === 2) {
+        for (var i = 1; i < result.Data.length; i++) {
+            message = message + "Pour aller de " + depart + " a " + dest + ", vous pouvez voyager " + result.Data[i].Name + ", le temps de trajet avec traffic sera de " + result.Data[i].InfoTraffic + "utes, la distance est de : " + result.Data[i].DistanceString + ".";
+        }
+    }
     TTS.speak({
         text: message,
         locale: 'fr-FR',
-        rate: myrate
+        rate: 0.75
     });
 }
 
+var nbsaga = 0;
 var depart = "";
 var reconDest;
 document.addEventListener('deviceready', deviceReady, false);
@@ -346,7 +357,7 @@ function deviceReady() {
     reconDest.onresult = function (event) {
         if (event.results.length > 0) {
             var text = event.results[0][0].transcript;
-            GoogleTraffic(depart, text);
+            GoogleTraffic(depart, text, nbsaga);
         }
     }
 }
@@ -368,4 +379,9 @@ function deviceIsReady() {
             setTimeout(function () { reconDest.start(); }, 1000);
         }
     }
+}
+
+function qSaga(nb) {
+    nbsaga = nb;
+    setTimeout(function () { reconDepart.start(); }, 1000);
 }
