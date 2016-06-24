@@ -83,7 +83,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 if (stateobject.Name === 'Movements') {
                     // Menu HOME
                     if ($scope.Menu === 'Home') {
-                        TTS.Speak({
+                        TTS.speak({
                             text: "Menu Home",
                             locale: 'fr-FR',
                             rate: 0.8
@@ -94,7 +94,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Right) {
                             // 'PushBullet'
-                            TTS.Speak({
+                            TTS.speak({
                                 text: "PushBullet",
                                 locale: 'fr-FR',
                                 rate: 0.8
@@ -105,7 +105,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Flat) {
                             // INFO
-                            TTS.Speak({
+                            TTS.speak({
                                 text: "Voici les infos du jour : ",
                                 locale: 'fr-FR',
                                 rate: 0.8
@@ -124,7 +124,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // 'RATP'
                             $scope.Menu = 'RATP';
-                            TTS.Speak({
+                            TTS.speak({
                                 text: "Menu R A T P.",
                                 locale: 'fr-FR',
                                 rate: 0.8
