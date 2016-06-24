@@ -59,17 +59,26 @@ namespace BlackInfo
         [MessageCallback]
         private void Morning(quiparle qui)
         {
-            int i = 0;
-            dynamic morningPack = PackageHost.GetSettingAsJsonObject("morningPack");
+            bool HWM = false;
+            bool FIO = false;
+            bool DI = false;
             string annonce = "";
-            foreach (string pack in morningPack)
+            PackageHost.RequestStateObjects("*", "BlackConnector", "InfoSettings", "*");
+            if (HWM)
             {
-                i++;
-                annonce += Requete(pack);
+                annonce += Requete("HWMonitor");
             }
-            if (i == 0)
+            if (FIO)
             {
-                annonce = "Vous n'avez configuré aucun package";
+                annonce += Requete("ForecastIO");
+            }
+            if (DI)
+            {
+                annonce += Requete("DayInfo");
+            }
+            if(annonce == "")
+            {
+                annonce = "aucun package choisit";
                 PackageHost.SendMessage(MessageScope.Create("ROMAIN-MSI/MessageCallback"), "MyMessage", new object[] { annonce, PackageHost.GetSettingValue<int>("volume"), PackageHost.GetSettingValue<int>("vitesse") });
             }
             PackageHost.PushStateObject("Morning", new { message = annonce, source = qui });
