@@ -19,9 +19,8 @@ namespace BlackInfo
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
         }
 
-
-        [StateObjectLink("ROMAIN-MSI", "BatteryChecker", "C1E768DC32A8DE4F932520D74134C3F4716C12D0")]
-        private StateObjectNotifier bat { get; set; }
+        //[StateObjectLink("ROMAIN-MSI", "BatteryChecker", "C1E768DC32A8DE4F932520D74134C3F4716C12D0")]
+        //private StateObjectNotifier bat { get; set; }
         [StateObjectLink("ROMAIN-MSI", "HWMonitor", "/hdd/0/temperature/0")]
         private StateObjectNotifier hard { get; set; }
         [StateObjectLink("ROMAIN-MSI", "HWMonitor", "/intelcpu/0/load/0")]
@@ -39,9 +38,9 @@ namespace BlackInfo
             string text = "";
             switch (pack)
             {
-                case "BatteryChecker":
-                    text = batterie();
-                    break;
+                //case "BatteryChecker":
+                //    text = batterie();
+                //    break;
                 case "ForecastIO":
                     string resume = tempsbdd();
                     text = $"il fait {meteo.DynamicValue.currently.temperature}° à {meteo.Value.Name} , {resume}. ";
@@ -53,7 +52,6 @@ namespace BlackInfo
                     text = dayInfo();
                     break;
             }
-
             return text;
 
         }
@@ -93,17 +91,17 @@ namespace BlackInfo
                 return $"Aujourd'hui c'est la saint {fete}, le soleil se lève à {suninfo.DynamicValue.Sunrise} et se couche à {suninfo.DynamicValue.Sunset}. ";
             }
         }
-        private string batterie()
-        {
-            if (bat.DynamicValue.StatusLabel == "Plugged to AC")
-            {
-                return $"l'ordinateur est branché sur secteur, la batterie est chargée à {bat.DynamicValue.EstimatedChargeRemaining}% ";
-            }
-            else
-            {
-                return $"L'ordinateur se décharge, il vous reste {bat.DynamicValue.EstimatedChargeRemaining}% de batterie ";
-            }
-        }
+        //private string batterie()
+        //{
+        //    if (bat.DynamicValue.StatusLabel == "Plugged to AC")
+        //    {
+        //        return $"l'ordinateur est branché sur secteur, la batterie est chargée à {bat.DynamicValue.EstimatedChargeRemaining}% ";
+        //    }
+        //    else
+        //    {
+        //        return $"L'ordinateur se décharge, il vous reste {bat.DynamicValue.EstimatedChargeRemaining}% de batterie ";
+        //    }
+        //}
 
         private string tempsbdd()
         {

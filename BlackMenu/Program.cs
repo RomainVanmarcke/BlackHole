@@ -13,15 +13,11 @@ namespace BlackMenu
     {
         static void Main(string[] args)
         {
-            PackageHost.Start<Program>(args);
-            
+            PackageHost.Start<Program>(args);            
         }
-
 
         public override void OnStart()
         {
-
-
             PackageHost.PushStateObject("Movements", new { Flat = false, Left = false, Right = false, Down = false });
             this.Acc.ValueChanged += (s, e) =>
             {
@@ -60,9 +56,8 @@ namespace BlackMenu
                     }
                 }
             };
-
-
         }
+
 
         [StateObjectLink("BlackConnector", "accelerometer")]
         private StateObjectNotifier Acc { get; set; }
