@@ -83,17 +83,33 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 if (stateobject.Name === 'Movements') {
                     // Menu HOME
                     if ($scope.Menu === 'Home') {
+                        TTS.Speak({
+                            text: "Menu Home",
+                            locale: 'fr-FR',
+                            rate: 0.8
+                        });
                         if (stateobject.Value.Left) {
                             // 'Request' (GT or 'RATP')
                             $scope.Menu = 'Request';
                         }
                         else if (stateobject.Value.Right) {
                             // 'PushBullet'
+                            TTS.Speak({
+                                text: "PushBullet",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
+                            $timeout(1000);
                             $scope.stopAcc();
                             recognition.start();
                         }
                         else if (stateobject.Value.Flat) {
                             // INFO
+                            TTS.Speak({
+                                text: "Voici les infos du jour : ",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
                             constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
                             constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
                         }
@@ -108,6 +124,11 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // 'RATP'
                             $scope.Menu = 'RATP';
+                            TTS.Speak({
+                                text: "Menu R A T P.",
+                                locale: 'fr-FR',
+                                rate: 0.8
+                            });
                         }
                         else if (stateobject.Value.Right) {
                             // GOOGLE TRAFFIC
@@ -118,20 +139,22 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // Get Schedule
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Schedule",
+                                text: "R A T P Schedule",
                                 locale: 'fr-FR',
                                 rate: 0.8
                             });
                             RatpSchedule();
+                            $scope.Menu = 'Home';
                         }
                         else if (stateobject.Value.Right) {
                             // Get Traffic
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Traffic",
+                                text: "R A T P Traffic",
                                 locale: 'fr-FR',
                                 rate: 0.8
                             });
                             RatpTraffic();
+                            $scope.Menu = 'Home';
                         }
                     }
                 }
