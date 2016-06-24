@@ -147,6 +147,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Right) {
                             // GOOGLE TRAFFIC
+                            $scope.Menu = 'GT';
                         }
                     }
                         // Menu 'RATP'
@@ -175,6 +176,22 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                                 RatpTraffic();
                             }, millisecondsToWait);
                             $scope.Menu = 'Traffic';
+                        }
+                    }
+                        // Menu GOOGLE TRAFFIC
+                    else if ($scope.Menu === 'GT') {
+                        if (stateobject.Value.Left) {
+
+                        }
+                        else if (stateobject.Value.Right) {
+
+                        }
+                        else if (stateobject.Value.Down) {
+                            // RETOUR HOME
+                            $scope.Menu = 'Home';
+                        }
+                        else if (stateobject.Value.Flat) {
+
                         }
                     }
                 }
