@@ -185,7 +185,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             TTS.speak({
                                 text: "Daipart",
                                 locale: 'fr-FR',
-                                rate: 0.9
+                                rate: myrate
                             });
                             setTimeout(function () { reconDepart.start();}, 1000);
                         }
@@ -318,7 +318,7 @@ function saga(result, dest, depart) {
     TTS.speak({
         text: message,
         locale: 'fr-FR',
-        rate: 0.75
+        rate: myrate
     });
 }
 
@@ -349,7 +349,7 @@ function deviceIsReady() {
             TTS.speak({
                 text: "Destination",
                 locale: 'fr-FR',
-                rate: 0.9
+                rate: myrate
             });
             setTimeout(function () { reconDest.start(); }, 1000);
         }

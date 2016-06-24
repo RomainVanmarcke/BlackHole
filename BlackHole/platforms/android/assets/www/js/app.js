@@ -51,7 +51,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     $scope.Z = result.z;
                     $scope.timeStamp = result.timestamp;
 
-                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+                    constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
                 });
         };
 
@@ -61,16 +61,15 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.X = 0;
             $scope.Y = 0;
             $scope.Z = 0;
-            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector']}, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
         };
 
         constellation.onConnectionStateChanged(function (change) {
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
+                constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": 0, "Y": 0, "Z": 0 }]);
+
             }
-            
-
-
         });
 
         var millisecondsToWait = 2000;
@@ -88,20 +87,42 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 if (stateobject.Name === 'Movements') {
                     // Menu HOME
                     if ($scope.Menu === 'Home') {
+                        //TTS.speak({
+                        //    text: "Menu Home",
+                        //    locale: 'fr-FR',
+                        //    rate: 0.8
+                        //});
                         if (stateobject.Value.Left) {
                             // 'Request' (GT or 'RATP')
                             $scope.Menu = 'Request';
-
+                            TTS.speak({
+                                text: "Request",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            //$timeout(1500);
                         }
                         else if (stateobject.Value.Right) {
                             // 'PushBullet'
+                            TTS.speak({
+                                text: "PushBullette",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            //$timeout(500);
                             $scope.stopAcc();
                             setTimeout(function () {
-                            recognition.start();
+                                recognition.start();
+                            }, millisecondsToWait);
 
                         }
                         else if (stateobject.Value.Flat) {
                             // INFO
+                            TTS.speak({
+                                text: "Voici les infos du jour : ",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
                             constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
                             constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
                         }
@@ -116,9 +137,17 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // 'RATP'
                             $scope.Menu = 'RATP';
+                            TTS.speak({
+                                text: "Menu R A T P.",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            $timeout(1000);
+
                         }
                         else if (stateobject.Value.Right) {
                             // GOOGLE TRAFFIC
+                            $scope.Menu = 'GT';
                         }
                     }
                         // Menu 'RATP'
@@ -126,22 +155,49 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         if (stateobject.Value.Left) {
                             // Get Schedule
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Schedule",
+                                text: "planning R A T P",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
                             setTimeout(function () {
-                            RatpSchedule();
+                                RatpSchedule();
+                            }, millisecondsToWait);
+                            //RatpSchedule();
+                            $scope.Menu = 'planning';
                         }
                         else if (stateobject.Value.Right) {
                             // Get Traffic
                             TTS.speak({
-                                text: "Vous avez sélectionné R A T P Traffic",
+                                text: "Etat du traffic R A T P",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
                             setTimeout(function () {
-                            RatpTraffic();
+                                RatpTraffic();
+                            }, millisecondsToWait);
+                            $scope.Menu = 'Traffic';
+                        }
+                    }
+                        // Menu GOOGLE TRAFFIC
+                    else if ($scope.Menu === 'GT') {
+                        if (stateobject.Value.Left) {
+                            $scope.stopAcc();
+                            TTS.speak({
+                                text: "Daipart",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            setTimeout(function () { reconDepart.start();}, 1000);
+                        }
+                        else if (stateobject.Value.Right) {
+
+                        }
+                        else if (stateobject.Value.Down) {
+                            // RETOUR HOME
+                            $scope.Menu = 'Home';
+                        }
+                        else if (stateobject.Value.Flat) {
+
                         }
                     }
                 }
@@ -163,7 +219,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         $scope.stopAcc();
                     }
                 }
-                })
+            })
         }) // Fin du OnUpdateStateObject
 
         // FONCTION RATP SCHEDULE
@@ -179,7 +235,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     if (s.indexOf("mn") >= 0) {
                         s = s[0] + s[1] + " minutes";
                     };
-                   annonce = annonce + ", " + s;
+                    annonce = annonce + ", " + s;
                 };
                 TTS.speak({
                     text: annonce,
@@ -214,6 +270,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             })
             $scope.Menu = 'Home';
         };
+        GoogleTraffic = function (depart, destination) {
+            //depart = "Lille";
+            //destination = "Avelin";
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['MSI-VIVIEN/GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
+                saga(result, destination, depart);
+            })
+        };
     }])
 
 
@@ -246,4 +309,49 @@ function onDeviceReady() {
 //    }
 //}
 
+function saga(result, dest, depart) {
+    var message = "";
+    //for (var i = 0; i < result.Data.length; i++) {
+    message = message + "Pour aller de " + depart + " a " + dest + ", il faut voyager " + result.Data[0].Name + ", le temps de trajet avec traffic sera de " + result.Data[0].InfoTraffic + "utes, la distance est de : " + result.Data[0].DistanceString;
+    //}
+    //alert(message);
+    TTS.speak({
+        text: message,
+        locale: 'fr-FR',
+        rate: myrate
+    });
+}
 
+var depart = "";
+var reconDest;
+document.addEventListener('deviceready', deviceReady, false);
+
+function deviceReady() {
+    reconDest = new SpeechRecognition();
+    reconDest.lang = 'fr-Fr';
+    reconDest.onresult = function (event) {
+        if (event.results.length > 0) {
+            var text = event.results[0][0].transcript;
+            GoogleTraffic(depart, text);
+        }
+    }
+}
+
+var reconDepart;
+document.addEventListener('deviceready', deviceIsReady, false);
+
+function deviceIsReady() {
+    reconDepart = new SpeechRecognition();
+    reconDepart.lang = 'fr-Fr';
+    reconDepart.onresult = function (event) {
+        if (event.results.length > 0) {
+            depart = event.results[0][0].transcript;
+            TTS.speak({
+                text: "Destination",
+                locale: 'fr-FR',
+                rate: myrate
+            });
+            setTimeout(function () { reconDest.start(); }, 1000);
+        }
+    }
+}
