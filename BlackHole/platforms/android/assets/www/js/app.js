@@ -181,7 +181,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         // Menu GOOGLE TRAFFIC
                     else if ($scope.Menu === 'GT') {
                         if (stateobject.Value.Left) {
-
+                            $scope.stopAcc();
+                            TTS.speak({
+                                text: "Daipart",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            setTimeout(function () { reconDepart.start();}, 1000);
                         }
                         else if (stateobject.Value.Right) {
 
@@ -264,7 +270,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             })
             $scope.Menu = 'Home';
         };
-
+        GoogleTraffic = function (depart, destination) {
+            //depart = "Lille";
+            //destination = "Avelin";
+            constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['MSI-VIVIEN/GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
+                saga(result, destination, depart);
+            })
+        };
     }])
 
 
@@ -297,4 +309,49 @@ function onDeviceReady() {
 //    }
 //}
 
+function saga(result, dest, depart) {
+    var message = "";
+    //for (var i = 0; i < result.Data.length; i++) {
+    message = message + "Pour aller de " + depart + " a " + dest + ", il faut voyager " + result.Data[0].Name + ", le temps de trajet avec traffic sera de " + result.Data[0].InfoTraffic + "utes, la distance est de : " + result.Data[0].DistanceString;
+    //}
+    //alert(message);
+    TTS.speak({
+        text: message,
+        locale: 'fr-FR',
+        rate: myrate
+    });
+}
 
+var depart = "";
+var reconDest;
+document.addEventListener('deviceready', deviceReady, false);
+
+function deviceReady() {
+    reconDest = new SpeechRecognition();
+    reconDest.lang = 'fr-Fr';
+    reconDest.onresult = function (event) {
+        if (event.results.length > 0) {
+            var text = event.results[0][0].transcript;
+            GoogleTraffic(depart, text);
+        }
+    }
+}
+
+var reconDepart;
+document.addEventListener('deviceready', deviceIsReady, false);
+
+function deviceIsReady() {
+    reconDepart = new SpeechRecognition();
+    reconDepart.lang = 'fr-Fr';
+    reconDepart.onresult = function (event) {
+        if (event.results.length > 0) {
+            depart = event.results[0][0].transcript;
+            TTS.speak({
+                text: "Destination",
+                locale: 'fr-FR',
+                rate: myrate
+            });
+            setTimeout(function () { reconDest.start(); }, 1000);
+        }
+    }
+}
