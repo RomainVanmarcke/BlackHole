@@ -16,7 +16,7 @@ namespace BlackInfo
 
         public override void OnStart()
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
+            PackageHost.CreateMessageProxy("BlackConnector").SOModifier("SettingsInfo", new { HWM = false, FIO = true, DI = false} ); // TESTER SANS !!!
         }
 
         //[StateObjectLink("ROMAIN-MSI", "BatteryChecker", "C1E768DC32A8DE4F932520D74134C3F4716C12D0")]
@@ -61,24 +61,23 @@ namespace BlackInfo
         [MessageCallback]
         private void Morning(quiparle qui)
         {
-            //PackageHost.WriteInfo("X:", settingsInfo.Value.DynamicValue);
-            //PackageHost.WriteInfo("Y:", settingsInfo.DynamicValue.HWM);
-
+            //Conversion en bool : ne fonctionne pas sans cette etape
+            bool hwm = settingsInfo.DynamicValue.HWM;
+            bool fio = settingsInfo.DynamicValue.FIO;
+            bool di = settingsInfo.DynamicValue.DI;
             string annonce = "";
-            //if (settingsInfo.DynamicValue.HWM)
-            //{
-            //    annonce += Requete("HWMonitor");
-            //}
-            //if (settingsInfo.DynamicValue.FIO)
-            //{
-            //    annonce += Requete("ForecastIO");
-            //}
-            //if (settingsInfo.DynamicValue.DI)
-            //{
-            //    annonce += Requete("DayInfo");
-            //}
-            annonce += Requete("DayInfo");
-            annonce += Requete("ForecastIO");
+            if (hwm)
+            {
+                annonce += Requete("HWMonitor");
+            }
+            if (fio)
+            {
+                annonce += Requete("ForecastIO");
+            }
+            if (di)
+            {
+                annonce += Requete("DayInfo");
+            }
             if(annonce == "")
             {
                 annonce = "aucun package choisit";
