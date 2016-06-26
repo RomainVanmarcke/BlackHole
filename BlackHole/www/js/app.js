@@ -31,6 +31,8 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
         FIO = true;
         DI = true;
         constellation.intializeClient("http://192.168.43.32:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
+        //constellation.intializeClient("http://192.168.0.10:8088", "21affda431649385c6ff45c10f7043b46d09d821", "BlackClient");
+
         constellation.connect();
 
         textInput = function (bullet) {
@@ -99,25 +101,30 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         //});
                         if (stateobject.Value.Left) {
                             // 'Request' (GT or 'RATP')
-                            $scope.Menu = 'Request';
-                            TTS.speak({
-                                text: "Request",
-                                locale: 'fr-FR',
-                                rate: myrate
-                            });
-                            //$timeout(1500);
+                            setTimeout(function () {
+                                $scope.Menu = 'Request';
+                                TTS.speak({
+                                    text: "Request",
+                                    locale: 'fr-FR',
+                                    rate: myrate
+                                });
+                            }, millisecondsToWait);
+                            //$scope.Menu = 'Request';
                         }
                         else if (stateobject.Value.Right) {
                             // 'PushBullet'
+                            $scope.Menu = "PushBullet";
                             TTS.speak({
                                 text: "PushBullette",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
-                            //$timeout(500);
                             $scope.stopAcc();
                             setTimeout(function () {
-                                recognition.start();
+                                recognition.start();                               
+                            }, millisecondsToWait);
+                            setTimeout(function () {
+                                $scope.Menu= "Home";
                             }, millisecondsToWait);
 
                         }
@@ -130,6 +137,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             });
                             constellation.sendMessage({ Scope: 'Package', Args: ['BlackInfo'] }, 'Morning', 0);
                             constellation.requestStateObjects("*", "BlackInfo", "Morning", "*");
+
                         }
                         else if (stateobject.Value.Down) {
                             // SETTINGS
@@ -148,12 +156,22 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
-                            $timeout(1000);
+                            //$timeout(1000);
 
                         }
                         else if (stateobject.Value.Right) {
                             // GOOGLE TRAFFIC
-                            $scope.Menu = 'GT';
+                            $scope.Menu = 'Google Traffic';
+                            TTS.speak({
+                                text: "Menu Google Traffic",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                        }
+
+                        else if (stateobject.Value.Down) {
+                            // Retour HOME
+                            $scope.Menu = 'Home';
                         }
                     }
                         // Menu 'RATP'
@@ -169,7 +187,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                                 RatpSchedule();
                             }, millisecondsToWait);
                             //RatpSchedule();
-                            $scope.Menu = 'planning';
+                            $scope.Menu = 'Planning';
                         }
                         else if (stateobject.Value.Right) {
                             // Get Traffic
@@ -183,15 +201,19 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             }, millisecondsToWait);
                             $scope.Menu = 'Traffic';
                         }
+                        else if (stateobject.Value.Down) {
+                            // Retour HOME
+                            $scope.Menu = 'Home';
+                        }
                     }
                         // Menu GOOGLE TRAFFIC
-                    else if ($scope.Menu === 'GT') {
+                    else if ($scope.Menu === 'Google Traffic') {
                         if (stateobject.Value.Left) {
                             $scope.stopAcc();
                             TTS.speak({
                                 text: "Départ",
                                 locale: 'fr-FR',
-                                rate: 0.9
+                                rate: myrate
                             });
                             qSaga(1);
                         }
@@ -200,7 +222,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             TTS.speak({
                                 text: "Départ",
                                 locale: 'fr-FR',
-                                rate: 0.9
+                                rate: myrate
                             });
                             qSaga(2);
                         }
@@ -313,20 +335,6 @@ function onDeviceReady() {
     }
 }
 
-//var record;
-//document.addEventListener('deviceready', onDeviceReady, false);
-
-//function onDeviceReady() {
-//    recognition = new SpeechRecognition();
-//    recognition.lang = 'fr-Fr';
-//    recognition.onresult = function (event) {
-//        if (event.results.length > 0) {
-//            var typetraffic = event.results[0][0].transcript;
-//            RATPSettings(typetraffic);
-//        }
-//    }
-//}
-
 function saga(result, dest, depart) {
     var message = "";
     if (nbsaga === 1) {
@@ -340,7 +348,7 @@ function saga(result, dest, depart) {
     TTS.speak({
         text: message,
         locale: 'fr-FR',
-        rate: 0.75
+        rate: myrate
     });
 }
 
