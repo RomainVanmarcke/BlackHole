@@ -141,7 +141,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Down) {
                             // SETTINGS
-                            BlackSettings();
+                            qsaga(10);
                             $scope.Menu = 'Home';
                         }
 
@@ -296,12 +296,23 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             })
         };
 
-        BlackSettings = function () {
-            HWM = !HWM;
-            DI = true;
-            FIO = true;
-            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI }]);
-
+        BlackSettings = function (hard, day, fore) {
+            var message = "Vous avez activé : ";
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": hard, "FIO": fore, "DI": day }]);
+            if (hard) {
+                message = message + "Les infos du PC,";
+            }
+            if (day) {
+                message = message + "Les infos du jour,";
+            }
+            if (fore) {
+                message = message + "la météo,";
+            }
+            TTS.speak({
+                text: message,
+                locale: 'fr-FR',
+                rate: myrate
+            });
         }
 
         // FONCTION RATP TRAFFIC
@@ -389,7 +400,12 @@ function deviceIsReady() {
                 locale: 'fr-FR',
                 rate: myrate
             });
-            setTimeout(function () { reconDest.start(); }, 1000);
+            if (nbsaga < 10) {
+                setTimeout(function () { reconDest.start(); }, 1000);
+            }
+            else if (qsaga === 10) {
+                TestSettings(text);
+            }
         }
     }
 }
@@ -397,4 +413,21 @@ function deviceIsReady() {
 function qSaga(nb) {
     nbsaga = nb;
     setTimeout(function () { reconDepart.start(); }, 1000);
+}
+
+function TestSettings(message) {
+    message = message.toLowerCase();
+    var DI = false;
+    var FI = false;
+    var HWM = false;
+    if (message.indexOf('info') >= 0 && message.indexOf('jour') >= 0) {
+        DI = true;
+    }
+    if (message.indexOf('info') >= 0 && message.indexOf('pc') >= 0) {
+        HWM = true;
+    }
+    if (message.indexOf('météo') >= 0) {
+        FI = true;
+    }
+    BlackSettings(HWM, DI, FI);
 }
