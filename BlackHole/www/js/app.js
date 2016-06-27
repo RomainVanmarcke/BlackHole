@@ -115,7 +115,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             // 'PushBullet'
                             $scope.Menu = "PushBullet";
                             TTS.speak({
-                                text: "PushBullette",
+                                text: "Peush Boulette",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
@@ -141,7 +141,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
                         else if (stateobject.Value.Down) {
                             // SETTINGS
-                            qsaga(10);
+                            TTS.speak({
+                                text: "Réglages",
+                                locale: 'fr-FR',
+                                rate: myrate
+                            });
+                            qSaga(10);
+                            $scope.stopAcc();
                             $scope.Menu = 'Home';
                         }
 
@@ -296,23 +302,28 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             })
         };
 
+        // BLACKSETTINGS
         BlackSettings = function (hard, day, fore) {
-            var message = "Vous avez activé : ";
+            var message = "Vous avez activer : ";
             constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": hard, "FIO": fore, "DI": day }]);
             if (hard) {
-                message = message + "Les infos du PC,";
+                message = message + "Les infos du PC , ";
             }
             if (day) {
-                message = message + "Les infos du jour,";
+                message = message + "Les infos du jour , ";
             }
             if (fore) {
-                message = message + "la météo,";
+                message = message + "la météo, ";
+            }
+            else {
+                message = "Vous n'avez rien activer !";
             }
             TTS.speak({
                 text: message,
                 locale: 'fr-FR',
                 rate: myrate
             });
+            
         }
 
         // FONCTION RATP TRAFFIC
@@ -395,16 +406,16 @@ function deviceIsReady() {
     reconDepart.onresult = function (event) {
         if (event.results.length > 0) {
             depart = event.results[0][0].transcript;
-            TTS.speak({
-                text: "Destination",
-                locale: 'fr-FR',
-                rate: myrate
-            });
             if (nbsaga < 10) {
+                TTS.speak({
+                    text: "Destination",
+                    locale: 'fr-FR',
+                    rate: myrate
+                });
                 setTimeout(function () { reconDest.start(); }, 1000);
             }
-            else if (qsaga === 10) {
-                TestSettings(text);
+            else if (nbsaga === 10) {
+                TestSettings(depart);
             }
         }
     }
@@ -426,7 +437,7 @@ function TestSettings(message) {
     if (message.indexOf('info') >= 0 && message.indexOf('pc') >= 0) {
         HWM = true;
     }
-    if (message.indexOf('météo') >= 0) {
+    if (message.indexOf('forecast') >= 0) {
         FI = true;
     }
     BlackSettings(HWM, DI, FI);
