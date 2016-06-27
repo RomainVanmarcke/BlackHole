@@ -67,13 +67,15 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
             $scope.Y = 0;
             $scope.Z = 0;
             constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": $scope.X, "Y": $scope.Y, "Z": $scope.Z }]);
+            constellation.sendMessage({ Scope: 'Package', Args: ['BlackMenu'] }, 'SOModifierBM', ['Movements', { "Flat": false, "Left": false, "Right": false, "Down": false }]);
+
         };
 
         constellation.onConnectionStateChanged(function (change) {
             if (change.newState === $.signalR.connectionState.connected) {
                 constellation.requestSubscribeStateObjects("*", "BlackMenu", "Movements", "*");
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['accelerometer', { "State": $scope.state, "X": 0, "Y": 0, "Z": 0 }]);
-                //constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['Movements', { "Flat": false, "Left": false, "Right": false, "Down": false }]);
+                constellation.sendMessage({ Scope: 'Package', Args: ['BlackMenu'] }, 'SOModifierBM', ['Movements', { "Flat": false, "Left": false, "Right": false, "Down": false }]);
                 constellation.sendMessage({ Scope: 'Package', Args: ['BlackConnector'] }, 'SOModifier', ['SettingsInfo', { "HWM": HWM, "FIO": FIO, "DI": DI}]);
 
             }
@@ -81,7 +83,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 
         var millisecondsToWait = 2000;
         myrate = 1;
-        $scope.Menu = 'Home';
+        $scope.Menu = 'Accueil';
         constellation.onUpdateStateObject(function (stateobject) {
 
             $scope.$apply(function () {
@@ -92,13 +94,8 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
 
                 // CAS SO MOVEMENTS
                 if (stateobject.Name === 'Movements') {
-                    // Menu HOME
-                    if ($scope.Menu === 'Home') {
-                        //TTS.speak({
-                        //    text: "Menu Home",
-                        //    locale: 'fr-FR',
-                        //    rate: myrate
-                        //});
+                    // Menu Accueil
+                    if ($scope.Menu === 'Accueil') {
                         if (stateobject.Value.Left) {
                             // 'Request' (GT or 'RATP')
                             setTimeout(function () {
@@ -124,7 +121,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                                 recognition.start();                               
                             }, millisecondsToWait);
                             setTimeout(function () {
-                                $scope.Menu= "Home";
+                                $scope.Menu= "Accueil";
                             }, millisecondsToWait);
 
                         }
@@ -142,13 +139,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         else if (stateobject.Value.Down) {
                             // SETTINGS
                             TTS.speak({
-                                text: "Réglages",
+                                text: "Raiglages",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
                             qSaga(10);
                             $scope.stopAcc();
-                            $scope.Menu = 'Home';
+                            $scope.Menu = 'Accueil';
                         }
 
                     }
@@ -176,13 +173,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                         }
 
                         else if (stateobject.Value.Down) {
-                            // Retour HOME
+                            // Retour Accueil
                             TTS.speak({
-                                text: "Home",
+                                text: "Accueil",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
-                            $scope.Menu = 'Home';
+                            $scope.Menu = 'Accueil';
                         }
                     }
                         // Menu 'RATP'
@@ -213,13 +210,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             $scope.Menu = 'Traffic';
                         }
                         else if (stateobject.Value.Down) {
-                            // Retour HOME
+                            // Retour Accueil
                             TTS.speak({
-                                text: "Home",
+                                text: "Accueil",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
-                            $scope.Menu = 'Home';
+                            $scope.Menu = 'Accueil';
                         }
                     }
                         // Menu GOOGLE TRAFFIC
@@ -243,13 +240,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                             qSaga(2);
                         }
                         else if (stateobject.Value.Down) {
-                            // RETOUR HOME
+                            // RETOUR Accueil
                             TTS.speak({
-                                text: "Home",
+                                text: "Accueil",
                                 locale: 'fr-FR',
                                 rate: myrate
                             });
-                            $scope.Menu = 'Home';
+                            $scope.Menu = 'Accueil';
                         }
                         else if (stateobject.Value.Flat) {
 
@@ -297,7 +294,7 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     locale: 'fr-FR',
                     rate: myrate
                 });
-                $scope.Menu = 'Home';
+                $scope.Menu = 'Accueil';
 
             })
         };
@@ -313,9 +310,9 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                 message = message + "Les infos du jour , ";
             }
             if (fore) {
-                message = message + "la météo, ";
+                message = message + "la mai TO, ";
             }
-            else {
+            else if (!hard && !day && !fore) {
                 message = "Vous n'avez rien activer !";
             }
             TTS.speak({
@@ -338,13 +335,13 @@ angular.module('blackapp', ['ionic', 'ngCordova', 'ngConstellation'])
                     rate: myrate
                 });
             })
-            $scope.Menu = 'Home';
+            $scope.Menu = 'Accueil';
         };
         GoogleTraffic = function (depart, destination, nb) {
             constellation.sendMessageWithSaga({ Scope: 'Package', Args: ['GoogleTraffic'] }, 'GetRoutes', [depart, destination], function (result) {
                 saga(result, destination, depart);
             })
-            $scope.Menu = "Home";
+            $scope.Menu = "Accueil";
         };
     }])
 

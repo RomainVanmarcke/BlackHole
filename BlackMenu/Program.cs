@@ -58,6 +58,12 @@ namespace BlackMenu
             };
         }
 
+        [MessageCallback]
+        void SOModifierBM(string name, object value)
+        {
+            PackageHost.PushStateObject(name, value);
+        }
+
 
         [StateObjectLink("BlackConnector", "accelerometer")]
         private StateObjectNotifier Acc { get; set; }

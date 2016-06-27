@@ -48,7 +48,7 @@ namespace BlackInfo
                     text = $"il fait {meteo.DynamicValue.currently.temperature}° à {meteo.Value.Name} , {resume}. ";
                     break;
                 case "HWMonitor":
-                    text = $"la temperature du processeur est de {hard.DynamicValue.Value}°, son utilisation est de {Math.Round(System.Convert.ToDouble(hard2.DynamicValue.Value), 2)} {hard2.DynamicValue.Unit}. ";
+                    text = $"la tempairature du processeur est de {hard.DynamicValue.Value}°, son utilisation est de {Math.Round(System.Convert.ToDouble(hard2.DynamicValue.Value), 2)} {hard2.DynamicValue.Unit}. ";
                     break;
                 case "DayInfo":
                     text = dayInfo();
