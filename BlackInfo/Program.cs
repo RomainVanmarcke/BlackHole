@@ -21,7 +21,7 @@ namespace BlackInfo
 
         //[StateObjectLink("ROMAIN-MSI", "BatteryChecker", "C1E768DC32A8DE4F932520D74134C3F4716C12D0")]
         //private StateObjectNotifier bat { get; set; }
-        [StateObjectLink("ROMAIN-MSI", "HWMonitor", "/hdd/0/temperature/0")]
+        [StateObjectLink("ROMAIN-MSI", "HWMonitor", "/intelcpu/0/temperature/0")]
         private StateObjectNotifier hard { get; set; }
         [StateObjectLink("ROMAIN-MSI", "HWMonitor", "/intelcpu/0/load/0")]
         private StateObjectNotifier hard2 { get; set; }
@@ -48,7 +48,7 @@ namespace BlackInfo
                     text = $"il fait {meteo.DynamicValue.currently.temperature}° à {meteo.Value.Name} , {resume}. ";
                     break;
                 case "HWMonitor":
-                    text = $"la temperature du disque hdd est {hard.DynamicValue.Value} {hard.DynamicValue.Unit}, l'utilisation du processeur est {Math.Round(System.Convert.ToDouble(hard2.DynamicValue.Value), 2)} {hard2.DynamicValue.Unit}. ";
+                    text = $"la temperature du processeur est de {hard.DynamicValue.Value}°, son utilisation est de {Math.Round(System.Convert.ToDouble(hard2.DynamicValue.Value), 2)} {hard2.DynamicValue.Unit}. ";
                     break;
                 case "DayInfo":
                     text = dayInfo();
